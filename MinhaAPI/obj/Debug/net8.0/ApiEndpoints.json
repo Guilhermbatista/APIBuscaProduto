@@ -121,7 +121,7 @@
   {
     "ContainingType": "MinhaAPI.Controllers.ProdutosController",
     "Method": "Get",
-    "RelativePath": "Produtos",
+    "RelativePath": "api/Produtos",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -141,7 +141,7 @@
   {
     "ContainingType": "MinhaAPI.Controllers.ProdutosController",
     "Method": "Post",
-    "RelativePath": "Produtos",
+    "RelativePath": "api/Produtos",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -157,7 +157,7 @@
   {
     "ContainingType": "MinhaAPI.Controllers.ProdutosController",
     "Method": "Get",
-    "RelativePath": "Produtos/{id}",
+    "RelativePath": "api/Produtos/{id}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -183,7 +183,7 @@
   {
     "ContainingType": "MinhaAPI.Controllers.ProdutosController",
     "Method": "Put",
-    "RelativePath": "Produtos/{id}",
+    "RelativePath": "api/Produtos/{id}",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
@@ -204,7 +204,7 @@
   {
     "ContainingType": "MinhaAPI.Controllers.ProdutosController",
     "Method": "Delete",
-    "RelativePath": "Produtos/{id}",
+    "RelativePath": "api/Produtos/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,

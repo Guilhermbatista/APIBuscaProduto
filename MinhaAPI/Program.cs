@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MinhaAPI.Context;
+using MinhaAPI.Extensions;
+using MinhaAPI.Logging;
 using System.Security.Cryptography.Xml;
 using System.Text.Json.Serialization;
 
@@ -11,6 +13,11 @@ builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializ
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Logging.AddProvider(new CustomLoggerProvider(new CustomLoggerProviderConfiguration
+{
+    LogLevel = LogLevel.Information
+}));
 
 // Conectando a classe Context com o BD
 string mySqlConnection = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -25,6 +32,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.ConfigureExceptionHandler();
 }
 
 app.UseHttpsRedirection();

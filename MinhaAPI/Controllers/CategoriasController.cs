@@ -32,6 +32,8 @@ public class CategoriasController : ControllerBase
     [HttpGet("{id:int}", Name = "ObterCategoria")]
     public ActionResult<Categoria> get(int id)
     {
+        //throw new Exception("Exceçao ao retonroar a categoria pelo id");
+
         var categoria = _context.Categorias.FirstOrDefault(c => c.CategoriaId == id);
         if(categoria is null)
         {

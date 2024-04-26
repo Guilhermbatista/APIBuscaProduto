@@ -6,7 +6,7 @@ using MinhaAPI.Models;
 
 namespace MinhaAPI.Controllers;
 
-[Route("[controller]")]// /produto
+[Route("api/[controller]")]// /produto
 [ApiController]
 public class ProdutosController : ControllerBase
 {
@@ -22,7 +22,7 @@ public class ProdutosController : ControllerBase
     public ActionResult<IEnumerable<Produto>> Get()
     {
         var produto = _context.Produtos.AsNoTracking().Take(10).ToList();
-        if(produto is null)
+        if(produto is null) 
         {
             return NotFound();
         }
