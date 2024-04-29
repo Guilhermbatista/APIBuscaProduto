@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using MinhaAPI.Context;
 using MinhaAPI.Extensions;
 using MinhaAPI.Logging;
+using MinhaAPI.Repository;
+using MinhaAPI.Repository.interfaces;
 using System.Security.Cryptography.Xml;
 using System.Text.Json.Serialization;
 
@@ -23,6 +25,9 @@ builder.Logging.AddProvider(new CustomLoggerProvider(new CustomLoggerProviderCon
 string mySqlConnection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>options.UseMySql(mySqlConnection, ServerVersion.AutoDetect(mySqlConnection)));
 
+builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+builder.Services.AddScoped<IProdutosRepository, ProdutoRepository>();
+builder.Services.AddScoped(typeof(IRepository<>),typeof(Repository<>));
 
 
 var app = builder.Build();

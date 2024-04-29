@@ -99,29 +99,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "MinhaAPI.Controllers.CategoriasController",
-    "Method": "GetCategoriaProdutos",
-    "RelativePath": "api/Categorias/produtos",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": [
-      {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[MinhaAPI.Models.Categoria, MinhaAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
     "ContainingType": "MinhaAPI.Controllers.ProdutosController",
     "Method": "Get",
-    "RelativePath": "api/Produtos",
+    "RelativePath": "Produtos",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -141,7 +121,7 @@
   {
     "ContainingType": "MinhaAPI.Controllers.ProdutosController",
     "Method": "Post",
-    "RelativePath": "api/Produtos",
+    "RelativePath": "Produtos",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -157,7 +137,7 @@
   {
     "ContainingType": "MinhaAPI.Controllers.ProdutosController",
     "Method": "Get",
-    "RelativePath": "api/Produtos/{id}",
+    "RelativePath": "Produtos/{id}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -183,7 +163,7 @@
   {
     "ContainingType": "MinhaAPI.Controllers.ProdutosController",
     "Method": "Put",
-    "RelativePath": "api/Produtos/{id}",
+    "RelativePath": "Produtos/{id}",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
@@ -204,7 +184,7 @@
   {
     "ContainingType": "MinhaAPI.Controllers.ProdutosController",
     "Method": "Delete",
-    "RelativePath": "api/Produtos/{id}",
+    "RelativePath": "Produtos/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
