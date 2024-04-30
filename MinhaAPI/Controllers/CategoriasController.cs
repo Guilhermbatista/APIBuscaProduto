@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MinhaAPI.Context;
+using MinhaAPI.DTOs;
+using MinhaAPI.DTOs.Mappings;
 using MinhaAPI.Models;
 using MinhaAPI.Repository.interfaces;
 
@@ -11,70 +13,94 @@ namespace MinhaAPI.Controllers;
 [ApiController]
 public class CategoriasController : ControllerBase
 {
-    private readonly IRepository<Categoria> _repository;
+    private readonly IUnitOfWork _uof;
 
-    public CategoriasController(IRepository<Categoria> repository)
+    public CategoriasController(IUnitOfWork uof)
     {
-        _repository = repository;
+        _uof = uof;
     }
-
-   
-
     [HttpGet]
-    public ActionResult<IEnumerable<Categoria>> Get()
+    public ActionResult<IEnumerable<CategoriaDTO>> Get()
     {
-        var categorias = _repository.GetAll();
+        var categorias = _uof.CategoriaRepository.GetAll();
+        
+        if(categorias is null)
+        
+            return NotFound("nao existem categorias... ");
+        
+       var categoriasDTO = categorias.ToCategoriaDTOList();
 
-        return Ok(categorias);
+        return Ok(categoriasDTO);
 
     }
 
     [HttpGet("{id:int}", Name = "ObterCategoria")]
-    public ActionResult<Categoria> get(int id)
+    public ActionResult<CategoriaDTO> get(int id)
     {
+        var categoria = _uof.CategoriaRepository.Get(c => c.CategoriaId == id);
 
-
-        var categoria = _repository.Get(c => c.CategoriaId == id);
-
-        if(categoria is null)
+        if (categoria is null)
         {
             return NotFound();
         }
-        return Ok(categoria);
+
+        var categoriaDTO = categoria.ToCategoriaDTO();
+
+        return Ok(categoriaDTO);
     }
+
     [HttpPost]
-    public ActionResult Post(Categoria categoria)
+    public ActionResult<CategoriaDTO> Post(CategoriaDTO categoriaDTO)
     {
-        if(categoria is null)
+        if(categoriaDTO is null)
         {
             return BadRequest();
         }
 
-        var categoriaCriada = _repository.Create(categoria);
+        var categoria = categoriaDTO.ToCategoria();
 
-        return new CreatedAtRouteResult("ObterCategoria", new {id = categoriaCriada.CategoriaId}, categoriaCriada);
+        var categoriaCriada = _uof.CategoriaRepository.Create(categoria);
+        _uof.Commit();
+
+        var NovaCategoriaDTO = categoriaCriada.ToCategoriaDTO();
+
+        return new CreatedAtRouteResult("ObterCategoria", new {id = NovaCategoriaDTO.CategoriaId}, NovaCategoriaDTO);
     }
+
+
     [HttpPut("{id:int}")]
-    public ActionResult Put(int id, Categoria categoria)
+    public ActionResult<CategoriaDTO> Put(int id, CategoriaDTO categoriaDTO)
     {
-        if (id != categoria.CategoriaId)
+        if (id != categoriaDTO.CategoriaId)
         {
             return BadRequest();
-        }       
-         _repository.Update(categoria);
+        }
 
-        return Ok(categoria);
+        var categoria = categoriaDTO.ToCategoria();
+
+        var categoriaAtualizada = _uof.CategoriaRepository.Update(categoria);
+        _uof.Commit();
+
+        var CategoriaAtualizadaDTO = categoriaAtualizada.ToCategoriaDTO();
+
+        return Ok(CategoriaAtualizadaDTO);
     }
+
+
     [HttpDelete("{id:int}")]
-    public ActionResult Delete(int id)
+    public ActionResult<CategoriaDTO> Delete(int id)
     {
-        var categoria = _repository.Get(c => c.CategoriaId == id);
+        var categoria = _uof.CategoriaRepository.Get(c => c.CategoriaId == id);
         if(categoria is null)
         {
             return NotFound("Categoria nao localizada");
         }
        
-       var categoriaExcluida = _repository.Delete(categoria); 
-        return Ok(categoriaExcluida);
+       var categoriaExcluida = _uof.CategoriaRepository.Delete(categoria);
+        _uof.Commit();
+
+        var CategoriaExcluidaDTO = categoriaExcluida.ToCategoriaDTO();
+
+        return Ok(CategoriaExcluidaDTO);
     }
 }
