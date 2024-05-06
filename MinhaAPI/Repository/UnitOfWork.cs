@@ -29,7 +29,14 @@ public class UnitOfWork : IUnitOfWork
         }
     }
 
-    public IProdutosRepository ProdutoRepository => throw new NotImplementedException();
+    public IProdutosRepository ProdutoRepository 
+    {
+        get
+        {
+            return _produtoRepo = _produtoRepo ?? new ProdutoRepository(_context);
+            
+        }
+    }
 
     public void Commit()
     {
