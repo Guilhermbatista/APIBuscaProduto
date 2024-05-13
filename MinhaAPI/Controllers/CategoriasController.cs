@@ -5,7 +5,9 @@ using MinhaAPI.Context;
 using MinhaAPI.DTOs;
 using MinhaAPI.DTOs.Mappings;
 using MinhaAPI.Models;
+using MinhaAPI.Pagination;
 using MinhaAPI.Repository.interfaces;
+using Newtonsoft.Json;
 
 namespace MinhaAPI.Controllers;
 
@@ -33,6 +35,42 @@ public class CategoriasController : ControllerBase
         return Ok(categoriasDTO);
 
     }
+
+    [HttpGet("pagination")]
+    public ActionResult<IEnumerable<CategoriaDTO>> Get([FromQuery] CategoriaParameters categoriasParameters)
+    {
+        var categorias = _uof.CategoriaRepository.GetCategorias(categoriasParameters);
+        return ObterCategorias(categorias);
+    }
+
+    private ActionResult<IEnumerable<CategoriaDTO>> ObterCategorias(PagedList<Categoria> categorias)
+    {
+        var metadata = new
+        {
+            categorias.TotalCount,
+            categorias.PageSize,
+            categorias.CurrentPage,
+            categorias.TotalPage,
+            categorias.HasNext,
+            categorias.HasPrevius
+
+        };
+
+        Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+
+        var categoriasDTO = categorias.ToCategoriaDTOList();
+
+        return Ok(categoriasDTO);
+    }
+
+    [HttpGet("filter/preco/pagination")]
+    public ActionResult<IEnumerable<CategoriaDTO>> GetCategoriaFiltradas([FromQuery] CategoriaFiltroNome categoriasFiltro)
+    {
+        var categorias = _uof.CategoriaRepository.GetCategoriasFiltroNome(categoriasFiltro);
+        return ObterCategorias(categorias);
+    }
+
 
     [HttpGet("{id:int}", Name = "ObterCategoria")]
     public ActionResult<CategoriaDTO> get(int id)

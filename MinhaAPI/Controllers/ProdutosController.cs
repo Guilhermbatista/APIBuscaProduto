@@ -8,6 +8,7 @@ using MinhaAPI.DTOs;
 using MinhaAPI.Models;
 using MinhaAPI.Pagination;
 using MinhaAPI.Repository.interfaces;
+using Newtonsoft.Json;
 
 namespace MinhaAPI.Controllers;
 
@@ -38,16 +39,44 @@ public class ProdutosController : ControllerBase
         return Ok(produtosDTO);
     }
 
+
+
     [HttpGet("pagination")]
     public ActionResult<IEnumerable<ProdutoDTO>>Get([FromQuery] ProdutosParameters produtosParameters)
     {
         var produtos = _uof.ProdutoRepository.GetProdutos(produtosParameters);
+
+        return ObterProdutos(produtos);
+    }
+
+    private ActionResult<IEnumerable<ProdutoDTO>> ObterProdutos(PagedList<Produto> produtos)
+    {
+        var metadata = new
+        {
+            produtos.TotalCount,
+            produtos.PageSize,
+            produtos.CurrentPage,
+            produtos.TotalPage,
+            produtos.HasNext,
+            produtos.HasPrevius
+
+        };
+
+        Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
+
 
         var produtosDTO = _mapper.Map<IEnumerable<ProdutoDTO>>(produtos);
 
         return Ok(produtosDTO);
     }
 
+    [HttpGet("filter/preco/pagination")]
+    public ActionResult<IEnumerable<ProdutoDTO>> GetProdutosFilterPreco([FromQuery] ProdutosFiltroPreco produtosFilterParameters)
+    {
+        var produtos = _uof.ProdutoRepository.GetProdutosFiltroPreco(produtosFilterParameters);
+
+        return ObterProdutos(produtos);
+    }
 
 
 
@@ -64,6 +93,8 @@ public class ProdutosController : ControllerBase
         return Ok(produtosDTO);
 
     }
+
+
     [HttpGet("{id:int:min(1)}", Name="ObterProduto")] // /produtos/id
     public  ActionResult<ProdutoDTO> Get(int id)
     {
@@ -78,6 +109,8 @@ public class ProdutosController : ControllerBase
         return Ok(produtoDTO);
 
     }
+
+
     [HttpPost]  
     public ActionResult<ProdutoDTO> Post (ProdutoDTO produtoDTO)
     {
@@ -140,6 +173,8 @@ public class ProdutosController : ControllerBase
         return Ok(produtoAtualizadoDTO);
         
     }
+
+
     [HttpDelete("{id:int}")]// /produtos/id
     public ActionResult<ProdutoDTO> Delete(int id)
     {
