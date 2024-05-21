@@ -1,5 +1,6 @@
 ﻿using MinhaAPI.Models;
 using MinhaAPI.Pagination;
+using X.PagedList;
 
 namespace MinhaAPI.Repository.interfaces;
 
@@ -7,7 +8,7 @@ public interface IProdutosRepository : IRepository<Produto>
 {
     //IEnumerable<Produto> GetProdutos(ProdutosParameters produtosParams);
 
-    PagedList<Produto> GetProdutos(ProdutosParameters produtosParams);
-    PagedList<Produto> GetProdutosFiltroPreco(ProdutosFiltroPreco produtosFiltroParams);
-    IEnumerable<Produto> GetProdutosPorCategoria(int id);
+    Task<IPagedList<Produto>> GetProdutosAsync(ProdutosParameters produtosParams);
+    Task<IPagedList<Produto>> GetProdutosFiltroPrecoAsync(ProdutosFiltroPreco produtosFiltroParams);
+    Task<IEnumerable<Produto>> GetProdutosPorCategoriaAsync(int id);
 }

@@ -1,11 +1,12 @@
 ﻿using MinhaAPI.Models;
 using MinhaAPI.Pagination;
+using X.PagedList;
 
 namespace MinhaAPI.Repository.interfaces;
 
 public interface ICategoriaRepository : IRepository<Categoria>
 {
-    PagedList<Categoria> GetCategorias(CategoriaParameters categoriasParams);
-    PagedList<Categoria> GetCategoriasFiltroNome(CategoriaFiltroNome categoriasParams);
+    Task<IPagedList<Categoria>> GetCategoriasAsync(CategoriaParameters categoriasParams);
+    Task<IPagedList<Categoria>> GetCategoriasFiltroNomeAsync(CategoriaFiltroNome categoriasParams);
 
 }
