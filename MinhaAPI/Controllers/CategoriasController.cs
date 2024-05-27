@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using MinhaAPI.Context;
 using MinhaAPI.DTOs;
@@ -15,6 +16,7 @@ namespace MinhaAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[EnableRateLimiting("fixedwindow")]
 public class CategoriasController : ControllerBase
 {
     private readonly IUnitOfWork _uof;
@@ -23,8 +25,9 @@ public class CategoriasController : ControllerBase
     {
         _uof = uof;
     }
-    [Authorize]
+    //[Authorize]
     [HttpGet]
+    [DisableRateLimiting]
     public async Task<ActionResult<IEnumerable<CategoriaDTO>>> Get()
     {
         var categorias = await _uof.CategoriaRepository.GetAllAsync();
@@ -131,6 +134,7 @@ public class CategoriasController : ControllerBase
 
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy ="AdminOnly")]
     public async  Task<ActionResult<CategoriaDTO>> Delete(int id)
     {
         var categoria = await _uof.CategoriaRepository.GetAsync(c => c.CategoriaId == id);

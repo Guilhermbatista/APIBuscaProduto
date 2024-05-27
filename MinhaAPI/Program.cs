@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -10,11 +11,13 @@ using MinhaAPI.Extensions;
 using MinhaAPI.Filters;
 using MinhaAPI.Logging;
 using MinhaAPI.Models;
+using MinhaAPI.MyRateLimitOptions;
 using MinhaAPI.Repository;
 using MinhaAPI.Repository.interfaces;
 using MinhaAPI.Services;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -93,6 +96,44 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+var myOptions = new MyRateLimitOptions();
+
+builder.Configuration.GetSection(MyRateLimitOptions.MyRateLimit).Bind(myOptions);
+
+builder.Services.AddRateLimiter(rateLimiteoptions =>
+{
+    rateLimiteoptions.AddFixedWindowLimiter(policyName: "fixedwindow", options =>
+    {
+        options.PermitLimit = myOptions.PermitLimit;
+        options.Window = TimeSpan.FromSeconds(myOptions.Window);
+        options.QueueLimit = myOptions.QueueLimit;
+        options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+
+    });
+
+    rateLimiteoptions.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+});
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpcontext =>
+                            RateLimitPartition.GetFixedWindowLimiter(
+                                partitionKey: httpcontext.User.Identity?.Name ?? 
+                                httpcontext.Request.Headers.Host.ToString(),
+
+                                
+                                factory: partition  => new FixedWindowRateLimiterOptions
+                                {
+                                    AutoReplenishment = true,
+                                    PermitLimit = 2,
+                                    QueueLimit = 0,
+                                    Window = TimeSpan.FromSeconds(10)
+                                }
+                                ));
+});
+
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
 
@@ -125,6 +166,21 @@ builder.Services.AddAuthorization(options =>
 
 });
 
+builder.Services.AddAuthentication().
+                 AddBearerToken();
+
+//var OrigensComAcessoPermitido = "_origensComAcessoPermitido";
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy => {
+            policy.WithOrigins("http://www.airequest.io").WithMethods("GET","POST").AllowAnyHeader();
+            });
+    
+});
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -135,6 +191,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+
+app.UseRateLimiter();
+app.UseCors();
 
 app.UseAuthorization();
 
